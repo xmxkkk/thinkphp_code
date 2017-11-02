@@ -11,18 +11,18 @@ images=tf.placeholder(tf.float32,[None,62,250,3])
 labels=tf.placeholder(tf.int32,[None,5,52])
 print('labels=',labels)
 
-conv_1=slim.conv2d(images,32,[5,5],1,padding='SAME')
+conv_1=slim.conv2d(images,32,[5,5],1,padding='SAME',activation_fn=tf.nn.relu)
 avg_pool_1=slim.avg_pool2d(conv_1,[2,2],[1,1],padding='SAME')
 
-conv_2=slim.conv2d(avg_pool_1,32,[5,5],1,padding='SAME')
+conv_2=slim.conv2d(avg_pool_1,32,[5,5],1,padding='SAME',activation_fn=tf.nn.relu)
 avg_pool_2=slim.avg_pool2d(conv_2,[2,2],[1,1],padding='SAME')
 
-conv_3=slim.conv2d(avg_pool_2,32,[3,3])
-avg_pool_3=slim.avg_pool2d(conv_3,[2,2],[1,1])
+# conv_3=slim.conv2d(avg_pool_2,32,[3,3])
+# avg_pool_3=slim.avg_pool2d(conv_3,[2,2],[1,1])
 
-flatten=slim.flatten(avg_pool_3)
+flatten=slim.flatten(avg_pool_2)
 
-fc1=slim.fully_connected(flatten,1024,activation_fn=None)
+fc1=slim.fully_connected(flatten,1024,activation_fn=tf.nn.relu)
 
 out0=slim.fully_connected(fc1,label_length,activation_fn=None)
 out1=slim.fully_connected(fc1,label_length,activation_fn=None)
@@ -58,7 +58,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     for i in range(2000000):
-        images_,labels_=data.next_batch(100,'train')
+        images_,labels_=data.next_batch(20,'train')
         _,loss_val=sess.run([train_op,loss_sum],feed_dict={images:images_,labels:labels_})
         print("loss_val =",loss_val)
 
